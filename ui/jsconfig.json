@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@ui/*": ["./*"]
+    }
+  },
+  "include": ["js/**/*.js", "css/**/*.css"]
+}

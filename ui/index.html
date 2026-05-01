@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claudecode</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="landing-page">
+  <div class="landing">
+    <h1 class="landing-title">Claudecode</h1>
+    <p class="landing-tagline">享受编程，即刻开始</p>
+    <div class="landing-hero" aria-hidden="true">
+      <img class="landing-hero-img" src="/assets/hero-claudecode.png" alt="" width="900" height="420" decoding="async"
+        onerror="this.classList.add('is-hidden'); this.nextElementSibling.classList.remove('is-hidden');">
+      <div class="landing-hero-fallback is-hidden" aria-hidden="true">
+        <div class="hero-fallback-inner">
+          <span class="hero-fallback-word">Claudecode</span>
+          <p class="hero-fallback-hint">未找到配图时请确认已保存为 <code>ui/assets/hero-claudecode.png</code> 并重新编译或复制 ui 目录</p>
+        </div>
+      </div>
+    </div>
+    <div class="landing-actions">
+      <button type="button" class="btn-apple-primary" id="btn-experience">即刻体验</button>
+      <button type="button" class="btn-apple-secondary" id="btn-later">稍后再说</button>
+    </div>
+  </div>
+  <div id="toast-later" class="landing-toast" hidden role="status"></div>
+  <div id="auth-overlay" class="auth-overlay" hidden aria-hidden="true">
+    <div class="auth-overlay-backdrop" id="auth-backdrop"></div>
+    <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <button type="button" class="auth-close" id="auth-close" aria-label="关闭">&times;</button>
+      <h2 class="auth-modal-title" id="auth-title">登录或注册</h2>
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" id="tab-login" role="tab" data-mode="login">登录</button>
+        <button type="button" class="auth-tab" id="tab-register" role="tab" data-mode="register">注册</button>
+      </div>
+      <div id="auth-err" class="auth-error" hidden></div>
+      <div class="auth-divider"><span>或</span></div>
+      <label class="auth-field-label">用户名</label>
+      <input type="text" class="auth-pill-input" id="modal-username" autocomplete="username" placeholder="输入用户名">
+      <label class="auth-field-label">密码</label>
+      <input type="password" class="auth-pill-input" id="modal-password" autocomplete="current-password" placeholder="输入密码">
+      <div id="auth-register-extra" class="auth-register-extra" hidden>
+        <label class="auth-field-label">验证码</label>
+        <div class="auth-captcha-row">
+          <input type="text" class="auth-pill-input auth-captcha-input" id="captcha-answer" maxlength="8" autocomplete="off"
+            placeholder="输入图中数字" inputmode="numeric" autocorrect="off" spellcheck="false">
+          <button type="button" class="auth-captcha-refresh" id="captcha-refresh" title="换一张">换一张</button>
+        </div>
+        <div id="captcha-svg-host" class="auth-captcha-svg-host" aria-hidden="true"></div>
+      </div>
+      <button type="button" class="auth-btn-continue" id="auth-submit">继续</button>
+      <p class="auth-footnote">本地毕设演示环境 · 请勿使用重要密码</p>
+    </div>
+  </div>
+  <script src="/js/auth.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>

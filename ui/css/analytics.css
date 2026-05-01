@@ -1,0 +1,431 @@
+/* 数据分析面板（与 code-scan / settings 卡片风格对齐） */
+.analytics-root {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 20px 48px;
+}
+
+.analytics-kicker {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gpt-muted);
+  margin: 0 0 4px;
+}
+
+.analytics-title {
+  font-size: 22px;
+  font-weight: 650;
+  margin: 0 0 8px;
+  color: var(--gpt-text);
+}
+
+.analytics-lead {
+  margin: 0 0 20px;
+  color: var(--gpt-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.analytics-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.analytics-refresh {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--gpt-border);
+  background: var(--gpt-elevated);
+  color: var(--gpt-text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.15s ease, filter 0.15s ease;
+}
+
+.analytics-refresh:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+
+.analytics-refresh:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.analytics-refresh:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.analytics-refresh--loading {
+  position: relative;
+}
+
+.analytics-refresh-status {
+  font-size: 13px;
+  color: var(--gpt-muted);
+  min-height: 1.25em;
+}
+
+.analytics-refresh-status:empty {
+  display: none;
+}
+
+.analytics-msg {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: #f87171;
+  min-height: 1.25em;
+}
+
+.analytics-msg:empty {
+  display: none;
+}
+
+.analytics-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.analytics-metric {
+  border: 1px solid var(--gpt-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--gpt-assistant);
+}
+
+.analytics-metric-val {
+  font-size: 22px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--gpt-text);
+  display: block;
+  line-height: 1.2;
+}
+
+.analytics-metric-lbl {
+  font-size: 12px;
+  color: var(--gpt-muted);
+  margin-top: 4px;
+}
+
+.analytics-section {
+  margin-bottom: 28px;
+}
+
+.analytics-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gpt-text);
+  margin: 0 0 12px;
+}
+
+.analytics-chart-wrap {
+  border: 1px solid var(--gpt-border);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--gpt-assistant);
+  overflow-x: auto;
+}
+
+.analytics-chart-wrap svg {
+  display: block;
+  min-width: 560px;
+}
+
+.analytics-kind-row {
+  display: flex;
+  height: 36px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--gpt-border);
+}
+
+.analytics-kind-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  min-width: 48px;
+}
+
+.analytics-kind-seg--chat {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+
+.analytics-kind-seg--scan {
+  background: linear-gradient(135deg, #14b8a6, #059669);
+}
+
+.analytics-kind-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--gpt-muted);
+}
+
+.analytics-kind-legend span strong {
+  color: var(--gpt-text);
+  font-weight: 600;
+}
+
+.analytics-bar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.analytics-bar-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.analytics-bar-label {
+  color: var(--gpt-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analytics-bar-track {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--gpt-elevated);
+  overflow: hidden;
+}
+
+.analytics-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  min-width: 2px;
+}
+
+.analytics-bar-count {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--gpt-muted);
+  font-size: 12px;
+}
+
+.analytics-pro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.analytics-pro-card {
+  border: 1px solid var(--gpt-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--gpt-assistant);
+}
+
+.analytics-pro-val {
+  font-size: 20px;
+  font-weight: 650;
+  color: var(--gpt-text);
+}
+
+.analytics-pro-lbl {
+  font-size: 12px;
+  color: var(--gpt-muted);
+  margin-top: 4px;
+}
+
+.analytics-empty {
+  font-size: 13px;
+  color: var(--gpt-muted);
+  margin: 0;
+}
+
+.analytics-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.analytics-chart-note {
+  font-size: 12px;
+  color: var(--gpt-muted);
+  margin: -4px 0 12px;
+  line-height: 1.45;
+}
+
+.analytics-subtitle {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 18px 0 10px;
+  color: var(--gpt-text);
+}
+
+.analytics-footnote {
+  font-size: 12px;
+  color: var(--gpt-muted);
+  margin: 14px 0 0;
+  line-height: 1.45;
+}
+
+.analytics-pro-grid--four {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+
+.analytics-bar-fill--mint {
+  background: linear-gradient(90deg, #5eead4, #14b8a6);
+}
+
+html[data-theme="light"] .analytics-chart-note,
+html[data-theme="light"] .analytics-footnote {
+  color: var(--apple-muted);
+}
+
+html[data-theme="light"] .analytics-subtitle {
+  color: var(--apple-text);
+}
+
+html[data-theme="light"] .analytics-kind-seg {
+  color: #fff;
+}
+
+html[data-theme="light"] .analytics-metric,
+html[data-theme="light"] .analytics-chart-wrap,
+html[data-theme="light"] .analytics-pro-card {
+  background: var(--apple-sub);
+}
+
+html[data-theme="light"] .analytics-title,
+html[data-theme="light"] .analytics-metric-val,
+html[data-theme="light"] .analytics-section-title,
+html[data-theme="light"] .analytics-bar-label,
+html[data-theme="light"] .analytics-pro-val {
+  color: var(--apple-text);
+}
+
+html[data-theme="light"] .analytics-lead,
+html[data-theme="light"] .analytics-kicker,
+html[data-theme="light"] .analytics-metric-lbl,
+html[data-theme="light"] .analytics-kind-legend,
+html[data-theme="light"] .analytics-bar-count,
+html[data-theme="light"] .analytics-pro-lbl {
+  color: var(--apple-muted);
+}
+
+html[data-theme="light"] .analytics-refresh {
+  background: #fff;
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--apple-text);
+}
+
+html[data-theme="light"] .analytics-bar-track {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+/* 套餐用量可视化 */
+.analytics-usage-overview {
+  margin-bottom: 8px;
+}
+
+.analytics-usage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.analytics-usage-card {
+  padding: 16px 16px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--gpt-border);
+  background: var(--gpt-elevated, rgba(255, 255, 255, 0.04));
+}
+
+.analytics-usage-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.analytics-usage-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gpt-text);
+}
+
+.analytics-usage-tier {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.25);
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.analytics-usage-bar-wrap {
+  margin-bottom: 8px;
+}
+
+.analytics-usage-bar-track {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.analytics-usage-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  min-width: 0;
+  transition: width 0.35s ease, background 0.2s ease;
+}
+
+.analytics-usage-bar-fill--calls {
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+}
+
+.analytics-usage-bar-fill--tokens {
+  background: linear-gradient(90deg, #0d9488, #5eead4);
+}
+
+.analytics-usage-bar-fill.analytics-usage-bar-fill--warn {
+  background: linear-gradient(90deg, #ca8a04, #facc15);
+}
+
+.analytics-usage-bar-fill.analytics-usage-bar-fill--full {
+  background: linear-gradient(90deg, #dc2626, #f87171);
+}
+
+.analytics-usage-meta {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--gpt-muted);
+}
+
+html[data-theme="light"] .analytics-usage-card {
+  background: var(--apple-sub);
+}
+
+html[data-theme="light"] .analytics-usage-bar-track {
+  background: rgba(0, 0, 0, 0.07);
+}
+
+html[data-theme="light"] .analytics-usage-tier {
+  background: rgba(139, 92, 246, 0.15);
+  color: #5b21b6;
+}

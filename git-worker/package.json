@@ -1,0 +1,15 @@
+{
+  "name": "cct-git-worker",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Loopback Git helper for cct-cn (simple-git)",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "simple-git": "^3.27.0"
+  }
+}

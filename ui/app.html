@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Claudecode</title>
+  <script>
+    (function () {
+      try {
+        var p = localStorage.getItem("cct_theme_pref") || "dark";
+        var t =
+          p === "system"
+            ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark")
+            : p === "light"
+              ? "light"
+              : "dark";
+        document.documentElement.setAttribute("data-theme", t);
+        document.documentElement.setAttribute("data-theme-pref", p);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/chat.css">
+  <link rel="stylesheet" href="/css/ide.css">
+  <link rel="stylesheet" href="/css/analytics.css">
+  <link rel="stylesheet" href="/repo-sync/style.css">
+  <link rel="stylesheet" href="/css/repo-sync.css">
+</head>
+<body class="gpt-shell" id="app-root" data-active-view="chat">
+  <aside class="gpt-sidebar" id="gpt-sidebar" aria-label="主导航">
+    <div class="gpt-side-header">
+      <span class="gpt-side-brand">Claudecode</span>
+      <button type="button" class="gpt-sidebar-collapse" id="sidebar-collapse" aria-label="收起侧边栏" title="收起">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="3" y="4" width="18" height="16" rx="2"/>
+          <line x1="9" y1="4" x2="9" y2="20"/>
+        </svg>
+      </button>
+    </div>
+
+    <button type="button" class="gpt-side-item active" data-view="chat" id="nav-chat">
+      <svg class="gpt-side-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        <path d="M12 11v6M9 14h6"/>
+      </svg>
+      <span>新项目</span>
+    </button>
+    <button type="button" class="gpt-side-item" data-view="components" id="nav-components">
+      <svg class="gpt-side-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      <span>组件工作室</span>
+    </button>
+    <button type="button" class="gpt-side-item" data-view="ide" id="nav-ide">
+      <svg class="gpt-side-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <polyline points="16 18 22 12 16 6"/>
+        <polyline points="8 6 2 12 8 18"/>
+        <line x1="10" y1="12" x2="14" y2="12"/>
+      </svg>
+      <span>代码工作区</span>
+    </button>
+    <button type="button" class="gpt-side-item" data-view="code-scan" id="nav-code-scan">
+      <svg class="gpt-side-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9.5 3.5 3 9v6l6.5 5.5L16 15V9L9.5 3.5z"/>
+        <path d="M16 9h3.5a2.5 2.5 0 0 1 2.5 2.5v1a2.5 2.5 0 0 1-2.5 2.5H16"/>
+        <circle cx="9.5" cy="12" r="1.2" fill="currentColor"/>
+      </svg>
+      <span>代码检测</span>
+    </button>
+    <button type="button" class="gpt-side-item" data-view="repo-sync" id="nav-repo-sync">
+      <svg class="gpt-side-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <ellipse cx="12" cy="12" rx="3" ry="8"/>
+        <path d="M5 12h2M17 12h2"/>
+        <path d="M7 8h10M7 16h10"/>
+      </svg>
+      <span>仓库同步</span>
+    </button>
+    <button type="button" class="gpt-side-item" data-view="analytics" id="nav-analytics">
+      <svg class="gpt-side-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 19V5"/>
+        <path d="M4 19h16"/>
+        <path d="M8 16v-5"/>
+        <path d="M12 16V8"/>
+        <path d="M16 16v-3"/>
+      </svg>
+      <span>数据分析</span>
+    </button>
+
+    <div class="gpt-side-spacer"></div>
+
+    <div class="gpt-user-block">
+      <div class="gpt-user-row">
+        <button type="button" class="gpt-user-trigger" id="user-menu-trigger" aria-expanded="false" aria-haspopup="true">
+          <span class="gpt-avatar" id="user-avatar-box">
+            <img id="user-avatar-img" class="gpt-avatar-img" alt="" width="32" height="32" hidden>
+            <span class="gpt-avatar-text" id="user-avatar-initials">?</span>
+          </span>
+          <span class="gpt-user-text-col">
+            <span class="gpt-user-name" id="user-display-name"></span>
+            <span class="gpt-user-tier" id="user-subscription-label">免费版</span>
+          </span>
+        </button>
+        <button type="button" class="gpt-user-upgrade-btn" id="sidebar-upgrade-btn">升级</button>
+      </div>
+      <div id="user-menu-popover" class="user-menu-popover" hidden role="menu">
+        <button type="button" class="user-menu-header" id="user-menu-profile-open">
+          <span class="gpt-avatar gpt-avatar-sm" id="menu-avatar-box">
+            <img id="menu-avatar-img" class="gpt-avatar-img" alt="" width="28" height="28" hidden>
+            <span class="gpt-avatar-text" id="menu-avatar-initials">?</span>
+          </span>
+          <span class="user-menu-header-text">
+            <span class="user-menu-display" id="menu-display-name"></span>
+            <span class="user-menu-handle" id="menu-username"></span>
+          </span>
+        </button>
+        <div class="user-menu-divider"></div>
+        <button type="button" class="user-menu-item" id="menu-billing-upgrade" role="menuitem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="3"/></svg>
+          升级计划
+        </button>
+        <button type="button" class="user-menu-item" id="menu-settings" role="menuitem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          设置
+        </button>
+        <button type="button" class="user-menu-item" id="menu-help" role="menuitem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+          帮助
+        </button>
+        <div class="user-menu-divider"></div>
+        <button type="button" class="user-menu-item user-menu-item-logout" id="menu-logout" role="menuitem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+          退出登录
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="gpt-main">
+    <header class="gpt-top">
+      <button type="button" class="gpt-sidebar-expand" id="sidebar-expand" aria-label="展开侧边栏" title="展开" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="16" rx="2"/>
+          <line x1="9" y1="4" x2="9" y2="20"/>
+        </svg>
+      </button>
+      <div id="model-picker-root" class="model-picker">
+        <button type="button" class="model-picker-trigger" id="model-picker-trigger" aria-expanded="false" aria-haspopup="listbox">
+          <span class="model-picker-trigger-text" id="model-picker-label">模型</span>
+          <svg class="model-picker-chev" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="M3 4.5L6 7.5L9 4.5"/>
+          </svg>
+        </button>
+        <div id="model-picker-dropdown" class="model-picker-dropdown" hidden role="listbox" aria-label="选择模型"></div>
+      </div>
+      <span class="gpt-top-spacer"></span>
+      <div id="gpt-top-chat-actions" class="gpt-top-actions" hidden>
+        <button type="button" class="gpt-top-chip" id="btn-new-chat">新建对话</button>
+        <button type="button" class="gpt-top-chip gpt-top-chip-ghost" id="btn-chat-history">历史对话</button>
+      </div>
+      <button type="button" class="gpt-menu-toggle" id="menu-toggle" aria-label="菜单">☰</button>
+      <span class="gpt-top-title" id="view-title">新项目</span>
+    </header>
+
+    <div class="gpt-content">
+      <section id="panel-chat" class="gpt-panel active">
+        <div class="gpt-chat-wrap" id="gpt-chat-wrap">
+          <aside id="chat-project-explorer" class="chat-project-explorer" hidden aria-label="项目资源管理器">
+            <div class="chat-explorer-head">
+              <span class="chat-explorer-title">资源管理器</span>
+              <button type="button" class="chat-explorer-close" id="chat-explorer-close" title="关闭工作区" aria-label="关闭工作区">×</button>
+            </div>
+            <div id="chat-explorer-tree" class="chat-explorer-tree"></div>
+            <p id="chat-explorer-status" class="chat-explorer-status"></p>
+          </aside>
+          <div id="split-tree-code" class="chat-pane-splitter" hidden aria-hidden="true"></div>
+          <div id="chat-code-column" class="chat-code-column" hidden>
+            <div id="chat-ai-review-bar" class="chat-ai-review-bar" hidden aria-label="AI 修改预览">
+              <span id="chat-ai-review-meta" class="chat-ai-review-meta"></span>
+              <select id="chat-ai-review-file-sel" class="chat-ai-review-sel" aria-label="选择要预览的文件"></select>
+              <span class="chat-ai-review-spacer"></span>
+              <button type="button" class="chat-ai-review-btn chat-ai-review-btn-primary" id="chat-ai-review-keep">保存全部</button>
+              <button type="button" class="chat-ai-review-btn chat-ai-review-btn-secondary" id="chat-ai-review-done" hidden>关闭预览</button>
+            </div>
+            <div id="chat-file-panel" class="chat-file-panel" hidden>
+              <div class="chat-file-panel-head">
+                <span id="chat-file-path" class="chat-file-path"></span>
+                <span class="chat-file-panel-actions">
+                  <button type="button" class="chat-file-btn" id="chat-file-save">保存</button>
+                  <button type="button" class="chat-file-btn chat-file-btn-ghost" id="chat-file-close">关闭</button>
+                </span>
+              </div>
+              <div class="chat-file-editor-stack" id="chat-file-editor-stack">
+                <div id="chat-file-editor-host" class="chat-file-editor-host" aria-label="代码编辑器"></div>
+                <textarea id="chat-file-editor" class="chat-file-editor chat-file-editor--fallback" spellcheck="false" wrap="off"></textarea>
+              </div>
+            </div>
+            <div id="chat-code-empty" class="chat-code-empty">
+              从左侧资源管理器选择文件，代码将显示在此区域（中间栏默认可拉宽）
+            </div>
+          </div>
+          <div id="split-code-ai" class="chat-pane-splitter" hidden aria-hidden="true"></div>
+          <div class="chat-desk-main" id="chat-desk-main">
+            <div class="chat-scroll">
+              <div class="chat-inner">
+                <div class="gpt-empty-chat" id="chat-empty">
+                  <div class="welcome-hero">
+                    <h2>我们先从哪里开始呢？</h2>
+                    <div class="welcome-cards" id="chat-welcome-cards">
+                      <button type="button" class="welcome-card" id="card-open-folder" title="打开本机文件夹">
+                        <span class="welcome-card-icon welcome-card-icon-folder" aria-hidden="true">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><path d="M2 10h20"/></svg>
+                        </span>
+                        <span class="welcome-card-text">
+                          <span class="welcome-card-title">打开文件夹</span>
+                          <span class="welcome-card-desc">浏览完整目录树，适合整个项目</span>
+                        </span>
+                      </button>
+                      <button type="button" class="welcome-card" id="card-open-file" title="打开单个文件">
+                        <span class="welcome-card-icon welcome-card-icon-file" aria-hidden="true">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        </span>
+                        <span class="welcome-card-text">
+                          <span class="welcome-card-title">打开文件</span>
+                          <span class="welcome-card-desc">快速查看或编辑单个源码文件</span>
+                        </span>
+                      </button>
+                      <button type="button" class="welcome-card welcome-card-server" id="card-server-ws" hidden title="使用服务端配置的工作区根目录">
+                        <span class="welcome-card-icon welcome-card-icon-server" aria-hidden="true">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/><path d="M6 8h.01M10 8h.01M14 8h.01"/></svg>
+                        </span>
+                        <span class="welcome-card-text">
+                          <span class="welcome-card-title">服务端工作区</span>
+                          <span class="welcome-card-desc">与「代码工作区」共用服务端目录；数据由 SQL Server 持久化。</span>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div id="chat-messages"></div>
+              </div>
+            </div>
+            <div class="composer-wrap">
+              <div class="composer-inner">
+              <input type="file" id="workspace-file-input" hidden>
+              <input type="file" id="workspace-folder-input" hidden multiple webkitdirectory directory>
+              <div class="composer-pill">
+                <div class="composer-field">
+                  <textarea id="chat-input" class="composer-textarea" rows="1" placeholder="有问题，尽管问"></textarea>
+                </div>
+                <div class="composer-bottom-bar">
+                  <div class="composer-bottom-spacer" aria-hidden="true"></div>
+                  <button type="button" class="composer-send" id="chat-send" title="发送" aria-label="发送">
+                    <svg class="composer-send-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M12 18.5V6.5M12 6.5L7.25 11.25M12 6.5L16.75 11.25" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div class="composer-under">
+                <div class="composer-agent-skill" aria-label="本轮对话附加角色与技能">
+                  <label class="composer-as-label"
+                    >角色 Agent
+                    <select id="chat-agent-select" class="composer-as-select" title="在「组件工作室」维护 agents 后在此选择">
+                      <option value="">（无）</option>
+                    </select>
+                  </label>
+                  <label class="composer-as-label"
+                    >技能 Skill
+                    <select id="chat-skill-select" class="composer-as-select" title="在「组件工作室」维护 skills 后在此选择">
+                      <option value="">（无）</option>
+                    </select>
+                  </label>
+                  <label class="composer-as-label"
+                    >指令 Command
+                    <select id="chat-command-select" class="composer-as-select" title="在「组件工作室」维护 commands 后在此选择">
+                      <option value="">（无）</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="composer-under-row2">
+                  <p class="composer-hint">Enter 发送 · Shift+Enter 换行</p>
+                  <button type="button" class="composer-clear-btn" id="chat-clear">清空上下文</button>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-ide" class="gpt-panel">
+        <div id="ide-root" class="ide-root-wrap"></div>
+      </section>
+
+      <section id="panel-code-scan" class="gpt-panel cct-slim-scroll">
+        <div class="code-scan-root">
+          <p class="code-scan-kicker">workspace</p>
+          <h2 class="code-scan-title">代码检测</h2>
+          <p class="code-scan-lead">选择服务端工作区内的相对路径（文件或文件夹），可多选维度；检测结论与结构化补丁在下方展示，采纳后写入磁盘。</p>
+
+          <div class="code-scan-section">
+            <p class="code-scan-label">检测范围</p>
+            <div class="code-scan-path-bar">
+              <button type="button" class="code-scan-chip-btn code-scan-chip-btn--browse" id="codescan-open-picker">浏览工作区…</button>
+            </div>
+            <div id="codescan-path-chips" class="code-scan-chips"></div>
+          </div>
+
+          <div class="code-scan-section">
+            <p class="code-scan-label">检测维度（可多选）</p>
+            <div id="codescan-dims" class="code-scan-dim-grid" role="group" aria-label="检测维度"></div>
+          </div>
+
+          <div class="code-scan-actions">
+            <button type="button" class="code-scan-run" id="codescan-run">开始检测</button>
+            <div id="codescan-progress" class="code-scan-progress" hidden></div>
+            <span id="codescan-busy" class="code-scan-busy" hidden></span>
+          </div>
+
+          <div class="code-scan-section">
+            <p class="code-scan-label">结果</p>
+            <p id="codescan-truncation-banner" class="code-scan-truncation-banner" hidden role="status"></p>
+            <p class="code-scan-severity-legend" id="codescan-severity-legend" hidden>
+              <span class="code-scan-severity-legend-title">严重程度：</span>
+              low 较低 · medium 中等 · high 较高（模型给出的粗粒度提示，非编译错误级别）
+            </p>
+            <div id="codescan-dimension-out" class="code-scan-dimension-out" hidden></div>
+            <div id="codescan-summary" class="code-scan-summary" hidden></div>
+            <div id="codescan-reply" class="code-scan-reply"></div>
+          </div>
+
+          <div id="codescan-apply-wrap" class="code-scan-apply-wrap" hidden>
+            <p class="code-scan-label">采纳修改</p>
+            <p id="codescan-patch-meta" class="code-scan-patch-meta"></p>
+            <button type="button" class="code-scan-run code-scan-run--secondary" id="codescan-apply">接受方案并写盘</button>
+          </div>
+        </div>
+
+        <div id="codescan-explorer-overlay" class="codescan-explorer-overlay" hidden aria-hidden="true">
+          <div class="codescan-explorer-backdrop" id="codescan-explorer-backdrop"></div>
+          <div class="codescan-explorer-sheet" role="dialog" aria-modal="true" aria-labelledby="codescan-explorer-title">
+            <div class="codescan-explorer-head">
+              <h3 id="codescan-explorer-title" class="codescan-explorer-title">浏览工作区</h3>
+              <button type="button" class="codescan-explorer-close" id="codescan-explorer-close" aria-label="关闭">×</button>
+            </div>
+            <p id="codescan-explorer-crumbs" class="codescan-explorer-crumbs"></p>
+            <div id="codescan-explorer-list" class="codescan-explorer-list"></div>
+            <div class="codescan-explorer-foot">
+              <button type="button" class="code-scan-chip-btn code-scan-chip-btn--ghost" id="codescan-explorer-up">上级</button>
+              <span class="codescan-explorer-foot-spacer" aria-hidden="true"></span>
+              <button type="button" class="code-scan-chip-btn codescan-explorer-done" id="codescan-explorer-done">完成</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-repo-sync" class="gpt-panel cct-slim-scroll">
+        <div class="repo-sync-root">
+          <p class="repo-sync-kicker">git · CNB</p>
+          <h2 class="repo-sync-title">仓库同步</h2>
+          <p class="repo-sync-lead">
+            在服务端配置的<strong>工作区根目录</strong>下，指定<strong> Git 仓库子路径</strong>（或使用「浏览」选定文件夹）；Git 命令在该目录执行（本机 <code>git.exe</code> + git-worker）。留空表示直接使用工作区根。
+          </p>
+          <p id="repo-sync-msg" class="repo-sync-msg" role="status"></p>
+          <div class="repo-sync-toolbar">
+            <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-refresh">刷新状态</button>
+            <span id="repo-sync-summary" class="repo-sync-summary"></span>
+          </div>
+          <div class="repo-sync-repo-path-row">
+            <label class="repo-sync-label" for="repo-sync-repo-rel">Git 仓库目录（相对工作区根）</label>
+            <div class="repo-sync-repo-path-fields">
+              <input type="text" id="repo-sync-repo-rel" class="repo-sync-input repo-sync-input--grow" placeholder="留空 = 工作区根；例如 my-project / src/repo" autocomplete="off" spellcheck="false">
+              <button type="button" class="repo-sync-btn repo-sync-btn-secondary" id="repo-sync-browse-repo">浏览…</button>
+            </div>
+            <p class="repo-sync-hint repo-sync-hint-tight">子路径下的文件夹须<strong>真实存在</strong>且内含 <code>.git</code> 才是可用仓库。</p>
+          </div>
+          <div class="repo-sync-grid">
+            <div class="repo-sync-col">
+              <label class="repo-sync-label">远端 remote</label>
+              <input type="text" id="repo-sync-remote" class="repo-sync-input" value="origin" autocomplete="off">
+              <label class="repo-sync-label">分支（可留空则用当前分支）</label>
+              <input type="text" id="repo-sync-branch" class="repo-sync-input" placeholder="默认当前分支" autocomplete="off">
+              <label class="repo-sync-label">提交说明</label>
+              <input type="text" id="repo-sync-commit-msg" class="repo-sync-input" placeholder="提交说明（推送前必填）" autocomplete="off">
+              <div class="repo-sync-actions">
+                <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-stage">暂存所选</button>
+                <button type="button" class="repo-sync-btn repo-sync-btn-ghost-hover" id="repo-sync-unstage">取消暂存所选</button>
+                <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-commit">提交</button>
+                <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-push">推送</button>
+                <button type="button" class="repo-sync-btn repo-sync-btn-warn repo-sync-btn-ghost-hover" id="repo-sync-pull">拉取</button>
+                <button type="button" class="repo-sync-btn repo-sync-btn-muted repo-sync-btn-ghost-hover" id="repo-sync-merge-abort">放弃合并</button>
+              </div>
+            </div>
+            <div class="repo-sync-col repo-sync-col-grow">
+              <p class="repo-sync-label">变更与暂存（分两栏：已暂存将随下次提交；工作区勾选后可「暂存所选」）</p>
+              <div id="repo-sync-file-list" class="repo-sync-file-list"></div>
+            </div>
+          </div>
+          <div id="repo-sync-conflict-wrap" class="repo-sync-conflict-wrap" hidden>
+            <h3 class="repo-sync-subtitle">合并冲突</h3>
+            <p class="repo-sync-hint">以下为索引中的 ours（:2）与 theirs（:3）。编辑右侧后可「保存此文件」再「提交合并」。</p>
+            <select id="repo-sync-conflict-sel" class="repo-sync-select" aria-label="冲突文件"></select>
+            <div class="repo-sync-conflict-actions">
+              <button type="button" class="repo-sync-btn repo-sync-btn-ghost-hover" id="repo-sync-keep-ours">左侧并入右侧（当前）</button>
+              <button type="button" class="repo-sync-btn repo-sync-btn-ghost-hover" id="repo-sync-keep-theirs">右侧改为传入版本</button>
+              <button type="button" class="repo-sync-btn repo-sync-btn-ghost-hover" id="repo-sync-keep-both">两侧拼接（简易）</button>
+              <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-save-file">保存此文件</button>
+              <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-commit-merge">提交合并</button>
+            </div>
+            <div id="repo-sync-diff-host" class="repo-sync-diff-host"></div>
+          </div>
+
+          <div id="repo-sync-picker-overlay" class="repo-sync-picker-overlay" hidden aria-hidden="true">
+            <div class="repo-sync-picker-backdrop" id="repo-sync-picker-backdrop"></div>
+            <div class="repo-sync-picker-sheet" role="dialog" aria-modal="true" aria-labelledby="repo-sync-picker-title">
+              <div class="repo-sync-picker-head">
+                <h3 id="repo-sync-picker-title" class="repo-sync-picker-title">在工作区内选择目录</h3>
+                <button type="button" class="repo-sync-picker-close" id="repo-sync-picker-close" aria-label="关闭">×</button>
+              </div>
+              <p id="repo-sync-picker-crumbs" class="repo-sync-picker-crumbs"></p>
+              <div id="repo-sync-picker-list" class="repo-sync-picker-list"></div>
+              <div class="repo-sync-picker-foot">
+                <button type="button" class="repo-sync-btn repo-sync-btn-muted repo-sync-btn-ghost-hover" id="repo-sync-picker-up">上级</button>
+                <span class="repo-sync-picker-foot-spacer" aria-hidden="true"></span>
+                <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-picker-use-root">使用工作区根</button>
+                <button type="button" class="repo-sync-btn repo-sync-btn-primary repo-sync-btn-ghost-hover" id="repo-sync-picker-select">使用当前文件夹</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-analytics" class="gpt-panel cct-slim-scroll">
+        <div class="analytics-root">
+          <p class="analytics-kicker">analytics</p>
+          <h2 class="analytics-title">数据分析</h2>
+          <p class="analytics-lead">
+            汇总近 14 日<strong>模型调用</strong>、<strong>Token</strong>与<strong>端到端耗时</strong>，以及<strong>工作区写盘</strong>（保存 / 采纳 / 建目录）。对话与检测指标在<strong>单次请求结束后</strong>写入日志；写盘在服务端确认成功后记录。
+          </p>
+          <div class="analytics-toolbar">
+            <button type="button" class="analytics-refresh" id="analytics-refresh" aria-busy="false">刷新</button>
+            <span id="analytics-refresh-status" class="analytics-refresh-status" aria-live="polite"></span>
+          </div>
+          <p id="analytics-msg" class="analytics-msg" role="alert"></p>
+
+          <div class="analytics-section analytics-usage-overview" id="analytics-usage-overview" hidden>
+            <h3 class="analytics-section-title">套餐与用量</h3>
+            <p class="analytics-chart-note">与当前订阅档位一致：模型单日调用与本月 Token</p>
+            <div class="analytics-usage-grid">
+              <div class="analytics-usage-card">
+                <div class="analytics-usage-card-head">
+                  <span class="analytics-usage-label">今日模型调用</span>
+                  <span class="analytics-usage-tier" id="analytics-usage-tier-lbl"></span>
+                </div>
+                <div class="analytics-usage-bar-wrap">
+                  <div class="analytics-usage-bar-track">
+                    <div class="analytics-usage-bar-fill analytics-usage-bar-fill--calls" id="analytics-usage-bar-calls" style="width:0%"></div>
+                  </div>
+                </div>
+                <p class="analytics-usage-meta" id="analytics-usage-meta-calls"></p>
+              </div>
+              <div class="analytics-usage-card">
+                <div class="analytics-usage-card-head">
+                  <span class="analytics-usage-label">本月 Token</span>
+                </div>
+                <div class="analytics-usage-bar-wrap">
+                  <div class="analytics-usage-bar-track">
+                    <div class="analytics-usage-bar-fill analytics-usage-bar-fill--tokens" id="analytics-usage-bar-tokens" style="width:0%"></div>
+                  </div>
+                </div>
+                <p class="analytics-usage-meta" id="analytics-usage-meta-tokens"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-metrics">
+            <div class="analytics-metric">
+              <span class="analytics-metric-val" id="analytics-m-today">—</span>
+              <span class="analytics-metric-lbl">今日调用</span>
+            </div>
+            <div class="analytics-metric">
+              <span class="analytics-metric-val" id="analytics-m-limit">—</span>
+              <span class="analytics-metric-lbl">单日上限</span>
+            </div>
+            <div class="analytics-metric">
+              <span class="analytics-metric-val" id="analytics-m-total">—</span>
+              <span class="analytics-metric-lbl">累计调用</span>
+            </div>
+            <div class="analytics-metric">
+              <span class="analytics-metric-val" id="analytics-m-threads-store">—</span>
+              <span class="analytics-metric-lbl">存储会话数</span>
+            </div>
+            <div class="analytics-metric">
+              <span class="analytics-metric-val" id="analytics-m-threads-log">—</span>
+              <span class="analytics-metric-lbl">日志内活跃会话</span>
+            </div>
+            <div class="analytics-metric">
+              <span class="analytics-metric-val" id="analytics-m-lines">—</span>
+              <span class="analytics-metric-lbl">已读日志行</span>
+            </div>
+          </div>
+
+          <div class="analytics-section">
+            <div class="analytics-chart-grid">
+              <div class="analytics-chart-cell">
+                <h3 class="analytics-section-title">近 14 日模型调用</h3>
+                <p class="analytics-chart-note">每日对话 + 代码检测次数</p>
+                <div class="analytics-chart-wrap"><div id="analytics-chart-daily"></div></div>
+              </div>
+              <div class="analytics-chart-cell">
+                <h3 class="analytics-section-title">近 14 日 Token（推断）</h3>
+                <p class="analytics-chart-note">按日合计：优先 API total；否则 prompt + completion</p>
+                <div class="analytics-chart-wrap"><div id="analytics-chart-tokens"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-section">
+            <h3 class="analytics-section-title">调用类型</h3>
+            <div id="analytics-kind-row" class="analytics-kind-row"></div>
+            <div id="analytics-kind-legend" class="analytics-kind-legend"></div>
+          </div>
+
+          <div class="analytics-section">
+            <h3 class="analytics-section-title">成功率与耗时</h3>
+            <div class="analytics-pro-grid analytics-pro-grid--four">
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-r-chat-ok">—</div>
+                <div class="analytics-pro-lbl">对话成功率</div>
+              </div>
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-r-scan-ok">—</div>
+                <div class="analytics-pro-lbl">检测成功率</div>
+              </div>
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-l-chat">—</div>
+                <div class="analytics-pro-lbl">对话平均耗时（ms）</div>
+              </div>
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-l-scan">—</div>
+                <div class="analytics-pro-lbl">检测平均耗时（ms）</div>
+              </div>
+            </div>
+            <p class="analytics-footnote" id="analytics-latency-footnote"></p>
+          </div>
+
+          <div class="analytics-section">
+            <h3 class="analytics-section-title">Token 明细（窗口内有分项的请求）</h3>
+            <div class="analytics-metrics">
+              <div class="analytics-metric">
+                <span class="analytics-metric-val" id="analytics-t-prompt">—</span>
+                <span class="analytics-metric-lbl">Prompt 累计</span>
+              </div>
+              <div class="analytics-metric">
+                <span class="analytics-metric-val" id="analytics-t-comp">—</span>
+                <span class="analytics-metric-lbl">Completion 累计</span>
+              </div>
+              <div class="analytics-metric">
+                <span class="analytics-metric-val" id="analytics-t-api">—</span>
+                <span class="analytics-metric-lbl">Total（API 上报）</span>
+              </div>
+              <div class="analytics-metric">
+                <span class="analytics-metric-val" id="analytics-t-inf">—</span>
+                <span class="analytics-metric-lbl">推断合计（图表口径）</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="analytics-section">
+            <h3 class="analytics-section-title">工作区写盘</h3>
+            <div class="analytics-pro-grid">
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-w-writes">—</div>
+                <div class="analytics-pro-lbl">文件写入次数</div>
+              </div>
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-w-mkdir">—</div>
+                <div class="analytics-pro-lbl">新建目录次数</div>
+              </div>
+              <div class="analytics-pro-card">
+                <div class="analytics-pro-val" id="analytics-w-bytes">—</div>
+                <div class="analytics-pro-lbl">写入总字节</div>
+              </div>
+            </div>
+            <h4 class="analytics-subtitle">高频路径</h4>
+            <div id="analytics-ws-paths" class="analytics-bar-list"></div>
+          </div>
+
+          <div class="analytics-section">
+            <h3 class="analytics-section-title">组件选用（Agent / Skill / Command）</h3>
+            <div id="analytics-tools" class="analytics-bar-list"></div>
+          </div>
+
+          <div class="analytics-section">
+            <h3 class="analytics-section-title">模型选用（含检测）</h3>
+            <div id="analytics-models" class="analytics-bar-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="panel-components" class="gpt-panel">
+        <div class="comp-toolbar">
+          <select id="comp-kind">
+            <option value="agents">Agents</option>
+            <option value="skills">Skills</option>
+            <option value="commands">Commands</option>
+          </select>
+          <button type="button" id="comp-refresh">刷新列表</button>
+          <button type="button" id="comp-new">新建</button>
+        </div>
+        <div class="comp-layout">
+          <ul id="comp-list" class="comp-list"></ul>
+          <div class="comp-editor">
+            <label>名称 <input type="text" id="comp-name" placeholder="英文标识，如 my-agent"></label>
+            <label>Markdown 内容</label>
+            <textarea id="comp-body" rows="16" placeholder="---&#10;name: ...&#10;---&#10;正文"></textarea>
+            <div class="comp-actions">
+              <button type="button" id="comp-save">保存</button>
+              <button type="button" id="comp-delete" class="danger">删除</button>
+            </div>
+            <p id="comp-msg" class="muted"></p>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <input type="file" id="avatar-file-input" accept="image/*" hidden>
+
+  <div id="profile-modal" class="profile-modal-overlay" hidden aria-hidden="true">
+    <div class="profile-modal-backdrop" id="profile-modal-backdrop"></div>
+    <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+      <h3 id="profile-modal-title" class="profile-modal-title">编辑个人资料</h3>
+      <button type="button" class="profile-avatar-wrap" id="profile-avatar-picker" aria-label="从本机选择图片更换头像" title="点击选择图片">
+        <div class="profile-avatar" id="profile-avatar-inner">
+          <img id="profile-avatar-img" class="profile-avatar-img" alt="" width="120" height="120" hidden>
+          <span id="profile-avatar-text">?</span>
+        </div>
+        <span class="profile-avatar-cam" aria-hidden="true">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </span>
+      </button>
+      <p class="profile-avatar-tip">点击头像从本机选择图片；仅保存在本浏览器，可与显示名一并用于界面展示。</p>
+      <button type="button" class="profile-avatar-reset" id="profile-avatar-reset">恢复默认头像</button>
+      <label class="profile-field">
+        <span class="profile-field-label">显示名称</span>
+        <input type="text" id="profile-display-name" class="profile-field-input" autocomplete="name" maxlength="64">
+      </label>
+      <label class="profile-field">
+        <span class="profile-field-label">用户名</span>
+        <input type="text" id="profile-username-ro" class="profile-field-input" readonly>
+      </label>
+      <p class="profile-hint">显示名称将用于侧栏与菜单展示；登录仍使用用户名。</p>
+      <div class="profile-modal-actions">
+        <button type="button" class="profile-btn-cancel" id="profile-cancel">取消</button>
+        <button type="button" class="profile-btn-save" id="profile-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="chat-history-overlay" class="chat-history-overlay" hidden aria-hidden="true">
+    <div class="chat-history-backdrop" id="chat-history-backdrop"></div>
+    <aside class="chat-history-panel" role="dialog" aria-modal="true" aria-labelledby="chat-history-title">
+      <div class="chat-history-head">
+        <span id="chat-history-title" class="chat-history-title">历史对话</span>
+        <button type="button" class="chat-history-close" id="chat-history-close" aria-label="关闭">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="chat-history-toolbar">
+        <label class="chat-history-search-wrap">
+          <span class="visually-hidden">搜索会话标题</span>
+          <input type="search" id="chat-history-search" class="chat-history-search" placeholder="搜索标题" autocomplete="off" spellcheck="false">
+        </label>
+        <p class="chat-history-hint">默认会话不可删除；新建会话后可点废纸篓图标删除。</p>
+      </div>
+      <ul id="chat-history-list" class="chat-history-list"></ul>
+    </aside>
+  </div>
+
+  <div id="settings-modal" class="profile-modal-overlay" hidden aria-hidden="true">
+    <div class="profile-modal-backdrop" id="settings-modal-backdrop"></div>
+    <div class="profile-modal settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+      <h3 class="profile-modal-title" id="settings-modal-title">设置</h3>
+      <p class="settings-section-label">外观</p>
+      <p class="settings-section-desc">选择整应用界面与编辑器的配色（偏好保存在本机浏览器）。</p>
+      <div class="settings-seg" role="radiogroup" aria-label="颜色模式">
+        <button type="button" class="settings-seg-btn" id="settings-theme-dark" data-theme-value="dark" role="radio" aria-pressed="false">深色</button>
+        <button type="button" class="settings-seg-btn" id="settings-theme-light" data-theme-value="light" role="radio" aria-pressed="false">浅色</button>
+        <button type="button" class="settings-seg-btn" id="settings-theme-system" data-theme-value="system" role="radio" aria-pressed="false">跟随系统</button>
+      </div>
+      <p class="settings-section-label">模型用量</p>
+      <div class="settings-llm-card" id="settings-llm-block">
+        <div class="settings-llm-row">
+          <div class="settings-llm-metric">
+            <span class="settings-llm-metric-val" id="settings-llm-today">0</span>
+            <span class="settings-llm-metric-lbl">今日已用</span>
+          </div>
+          <div class="settings-llm-metric">
+            <span class="settings-llm-metric-val" id="settings-llm-limit">∞</span>
+            <span class="settings-llm-metric-lbl">单日上限</span>
+          </div>
+          <div class="settings-llm-metric">
+            <span class="settings-llm-metric-val" id="settings-llm-total">0</span>
+            <span class="settings-llm-metric-lbl">累计调用</span>
+          </div>
+        </div>
+        <div class="settings-llm-progress" id="settings-llm-progress" hidden>
+          <div class="settings-llm-progress-track">
+            <div class="settings-llm-progress-fill" id="settings-llm-progress-fill"></div>
+          </div>
+          <p class="settings-llm-progress-hint" id="settings-llm-progress-hint"></p>
+        </div>
+        <p class="settings-llm-footnote">单日限额：<strong>付费档</strong>按订阅等级内置上限（见升级套餐中的「每日调用」）；<strong>免费档</strong>默认不限，可在服务端配置 <span class="settings-llm-code">llm_daily_call_limit</span>（&gt;0 时仅约束免费档）。</p>
+      </div>
+      <div class="profile-modal-actions settings-modal-footer">
+        <button type="button" class="profile-btn-save" id="settings-close">完成</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="help-modal" class="profile-modal-overlay help-modal-overlay" hidden aria-hidden="true">
+    <div class="profile-modal-backdrop" id="help-modal-backdrop"></div>
+    <div class="help-modal-sheet" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+      <button type="button" class="help-modal-close" id="help-modal-close" aria-label="关闭">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <p class="help-modal-kicker">帮助</p>
+      <h2 class="help-modal-title" id="help-modal-title">联系我们</h2>
+      <p class="help-modal-lead">本产品为课程 / 毕设演示环境。</p>
+      <p class="help-modal-contact">
+        <span class="help-modal-contact-label">联系人</span>
+        <span class="help-modal-contact-value">上海工程技术大学 · 廖钊宇</span>
+      </p>
+      <button type="button" class="help-modal-done" id="help-modal-done">完成</button>
+    </div>
+  </div>
+
+  <div id="billing-plans-modal" class="billing-modal-overlay" hidden aria-hidden="true">
+    <div class="billing-modal-backdrop" id="billing-plans-backdrop"></div>
+    <div class="billing-modal-shell billing-plans-shell" role="dialog" aria-modal="true" aria-labelledby="billing-plans-title">
+      <button type="button" class="billing-modal-close" id="billing-plans-close" aria-label="关闭">×</button>
+      <h2 id="billing-plans-title" class="billing-modal-title">升级套餐</h2>
+      <div class="billing-seg" role="tablist" aria-label="套餐类型">
+        <button type="button" class="billing-seg-btn billing-seg-btn-active" id="billing-seg-personal" aria-selected="true">个人</button>
+        <button type="button" class="billing-seg-btn" id="billing-seg-business" aria-selected="false">企业</button>
+      </div>
+      <p class="billing-plans-hint" id="billing-plans-hint">企业版展示与个人类型相同（演示）</p>
+      <div id="billing-plans-grid" class="billing-plans-grid"></div>
+    </div>
+  </div>
+
+  <div id="billing-checkout-modal" class="billing-modal-overlay" hidden aria-hidden="true">
+    <div class="billing-modal-backdrop" id="billing-checkout-backdrop"></div>
+    <div class="billing-checkout-layout" role="dialog" aria-modal="true" aria-labelledby="billing-checkout-title">
+      <div class="billing-checkout-main">
+        <button type="button" class="billing-checkout-back" id="billing-checkout-back" aria-label="返回">←</button>
+        <h2 id="billing-checkout-title" class="billing-checkout-title">配置套餐</h2>
+        <p class="billing-checkout-section-label">付款方式</p>
+        <div class="billing-pay-grid" role="radiogroup" aria-label="付款方式">
+          <button type="button" class="billing-pay-tile billing-pay-tile-active" id="billing-pay-wechat" role="radio" aria-checked="true" data-pay="wechat">
+            <span class="billing-pay-check" aria-hidden="true">✓</span>
+            <span class="billing-pay-icon" aria-hidden="true">微</span>
+            <span>微信支付</span>
+          </button>
+          <button type="button" class="billing-pay-tile" id="billing-pay-alipay" role="radio" aria-checked="false" data-pay="alipay">
+            <span class="billing-pay-check" aria-hidden="true">✓</span>
+            <span class="billing-pay-icon billing-pay-icon-alipay" aria-hidden="true">支</span>
+            <span>支付宝支付</span>
+          </button>
+        </div>
+        <p class="billing-checkout-footnote">当前为演示环境：点击「订阅」即模拟支付成功并开通对应额度。</p>
+      </div>
+      <aside class="billing-checkout-summary">
+        <h3 class="billing-summary-plan" id="billing-summary-plan-name">Plus 套餐</h3>
+        <p class="billing-summary-section">权益摘要</p>
+        <ul class="billing-summary-features" id="billing-summary-features"></ul>
+        <div class="billing-summary-rows">
+          <div class="billing-summary-row"><span>按月订阅</span><span id="billing-summary-price">¥0/mo</span></div>
+          <div class="billing-summary-row"><span>本月 Token 配额</span><span id="billing-summary-quota">—</span></div>
+          <div class="billing-summary-row billing-summary-row-total"><span>应付（演示）</span><span id="billing-summary-total">¥0</span></div>
+        </div>
+        <button type="button" class="billing-subscribe-btn" id="billing-checkout-subscribe">订阅</button>
+      </aside>
+    </div>
+  </div>
+
+  <script defer src="/js/chat-session.js"></script>
+  <script defer src="/js/chat.js"></script>
+  <script defer src="/js/model-picker.js"></script>
+  <script defer src="/js/chat-project.js"></script>
+  <script defer src="/js/components.js"></script>
+  <script type="module" src="/ide/ide.js"></script>
+  <script defer src="/js/code-scan.js"></script>
+  <script defer src="/js/analytics.js"></script>
+  <script defer src="/js/billing/billing-modals.js"></script>
+  <script defer src="/repo-sync/repo-sync-monaco.js"></script>
+  <script defer src="/js/repo-sync/repo-sync-main.js"></script>
+  <script defer src="/js/app.js"></script>
+</body>
+</html>
